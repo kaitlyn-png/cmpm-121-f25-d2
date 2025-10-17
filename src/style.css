@@ -1,10 +1,13 @@
 #main {
   text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 
 #header {
   font-size: 24px;
 }
+
 #cvs {
   width: 256px;
   height: 256px;
@@ -12,4 +15,15 @@
   border-radius: 10px;
   filter: drop-shadow(1px 1px 1px black) drop-shadow(1px -1px 1px black)
     drop-shadow(-1px 1px 1px black) drop-shadow(-1px -1px 1px black);
+}
+
+#clear-button {
+  margin-top: 10px;
+  font-size: 16px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f44336;
+  color: white;
+  cursor: pointer;
 }
