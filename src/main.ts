@@ -14,6 +14,8 @@ document.body.innerHTML = `
 
 const canvas = document.getElementById("cvs") as HTMLCanvasElement;
 canvas.id = "cvs";
+canvas.width = 256;
+canvas.height = 256;
 const context = canvas.getContext("2d");
 
 if (context) {
