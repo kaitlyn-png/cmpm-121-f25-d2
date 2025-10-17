@@ -49,7 +49,9 @@ canvas.addEventListener("mouseup", () => {
   cursor.active = false;
 });
 
-const clearButton = document.getElementById("clear-button") as HTMLButtonElement;
+const clearButton = document.getElementById(
+  "clear-button",
+) as HTMLButtonElement;
 
 clearButton.addEventListener("click", () => {
   if (context) {
