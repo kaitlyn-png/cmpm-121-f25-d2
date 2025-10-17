@@ -8,6 +8,8 @@ document.body.innerHTML = `
     </div>
     <div id = "buttons-container">
       <button id="clear-button">clear</button>
+      <button id="undo-button">undo</button>
+      <button id="redo-button">redo</button>
     </div>
   </div>
 `;
@@ -30,6 +32,7 @@ const cursor = {
 };
 
 const strokes: Array<Array<{ x: number; y: number }>> = [];
+const redos: Array<Array<{ x: number; y: number }>> = [];
 
 canvas.addEventListener("mousedown", (event) => {
   cursor.active = true;
@@ -37,6 +40,7 @@ canvas.addEventListener("mousedown", (event) => {
   cursor.y = event.offsetY;
 
   strokes.push([{ x: cursor.x, y: cursor.y }]);
+  redos.splice(0, redos.length);
   canvas.dispatchEvent(new Event("drawing-changed"));
 });
 
@@ -60,7 +64,6 @@ canvas.addEventListener("mouseup", onPointerUp);
 canvas.addEventListener("mouseleave", onPointerUp);
 
 canvas.addEventListener("drawing-changed", () => {
-  console.log("Drawing changed");
   if (!context) return;
 
   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -86,10 +89,35 @@ const clearButton = document.getElementById(
   "clear-button",
 ) as HTMLButtonElement;
 
+const undoButton = document.getElementById(
+  "undo-button",
+) as HTMLButtonElement;
+
+const redoButton = document.getElementById(
+  "redo-button",
+) as HTMLButtonElement;
+
 clearButton.addEventListener("click", () => {
-  if (context) {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = "white";
-    context.fillRect(0, 0, canvas.width, canvas.height);
+  strokes.splice(0, strokes.length);
+  canvas.dispatchEvent(new Event("drawing-changed"));
+});
+
+undoButton.addEventListener("click", () => {
+  if (strokes.length > 0) {
+    const s = strokes.pop();
+    if (s) {
+      redos.push(s);
+      canvas.dispatchEvent(new Event("drawing-changed"));
+    }
+  }
+});
+
+redoButton.addEventListener("click", () => {
+  if (redos.length > 0) {
+    const r = redos.pop();
+    if (r) {
+      strokes.push(r);
+      canvas.dispatchEvent(new Event("drawing-changed"));
+    }
   }
 });
