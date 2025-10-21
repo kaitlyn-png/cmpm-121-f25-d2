@@ -51,3 +51,23 @@
   color: white;
   cursor: pointer;
 }
+#marker-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+#thin-marker-button,
+#thick-marker-button {
+  font-size: 16px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #ff9800;
+  color: white;
+  cursor: pointer;
+}
+
+#thin-marker-button.active,
+#thick-marker-button.active {
+  background-color: #e68a00;
+}

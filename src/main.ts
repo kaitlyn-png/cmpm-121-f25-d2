@@ -11,6 +11,10 @@ document.body.innerHTML = `
       <button id="undo-button">undo</button>
       <button id="redo-button">redo</button>
     </div>
+    <div id = "marker-buttons-container">
+      <button id="thin-marker-button" class="active">thin marker</button>
+      <button id="thick-marker-button">thick marker</button>
+    </div>
   </div>
 `;
 
@@ -40,15 +44,18 @@ interface Point {
   y: number;
 }
 
+let currentLineWidth = 2;
+
 class MarkerLine implements Drawable {
   points: Point[] = [];
   fillStyle = "black";
-  lineWidth = 2;
   lineCap: CanvasLineCap = "round";
   strokeStyle = "black";
+  linewidth: number = 2; //default line width
 
-  constructor(x: number, y: number) {
+  constructor(x: number, y: number, lineWidth: number) {
     this.points.push({ x, y });
+    this.linewidth = lineWidth;
   }
 
   drag(x: number, y: number) {
@@ -58,7 +65,7 @@ class MarkerLine implements Drawable {
   display(ctx: CanvasRenderingContext2D) {
     if (this.points.length === 0) return;
     ctx.save();
-    ctx.lineWidth = this.lineWidth;
+    ctx.lineWidth = this.linewidth;
     ctx.lineCap = this.lineCap;
     ctx.strokeStyle = this.strokeStyle;
 
@@ -80,7 +87,7 @@ canvas.addEventListener("mousedown", (event) => {
   cursor.x = event.offsetX;
   cursor.y = event.offsetY;
 
-  strokes.push(new MarkerLine(cursor.x, cursor.y));
+  strokes.push(new MarkerLine(cursor.x, cursor.y, currentLineWidth));
   redos.splice(0, redos.length);
   canvas.dispatchEvent(new Event("drawing-changed"));
 });
@@ -128,6 +135,14 @@ const redoButton = document.getElementById(
   "redo-button",
 ) as HTMLButtonElement;
 
+const thinMarkerButton = document.getElementById(
+  "thin-marker-button",
+) as HTMLButtonElement;
+
+const thickMarkerButton = document.getElementById(
+  "thick-marker-button",
+) as HTMLButtonElement;
+
 clearButton.addEventListener("click", () => {
   strokes.splice(0, strokes.length);
   canvas.dispatchEvent(new Event("drawing-changed"));
@@ -151,4 +166,16 @@ redoButton.addEventListener("click", () => {
       canvas.dispatchEvent(new Event("drawing-changed"));
     }
   }
+});
+
+thinMarkerButton.addEventListener("click", () => {
+  currentLineWidth = 2;
+  thinMarkerButton.classList.add("active");
+  thickMarkerButton.classList.remove("active");
+});
+
+thickMarkerButton.addEventListener("click", () => {
+  currentLineWidth = 8;
+  thickMarkerButton.classList.add("active");
+  thinMarkerButton.classList.remove("active");
 });
