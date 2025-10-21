@@ -31,15 +31,56 @@ const cursor = {
   y: 0,
 };
 
-const strokes: Array<Array<{ x: number; y: number }>> = [];
-const redos: Array<Array<{ x: number; y: number }>> = [];
+interface Drawable {
+  display(ctx: CanvasRenderingContext2D): void;
+}
+
+interface Point {
+  x: number;
+  y: number;
+}
+
+class MarkerLine implements Drawable {
+  points: Point[] = [];
+  fillStyle = "black";
+  lineWidth = 2;
+  lineCap: CanvasLineCap = "round";
+  strokeStyle = "black";
+
+  constructor(x: number, y: number) {
+    this.points.push({ x, y });
+  }
+
+  drag(x: number, y: number) {
+    this.points.push({ x, y });
+  }
+
+  display(ctx: CanvasRenderingContext2D) {
+    if (this.points.length === 0) return;
+    ctx.save();
+    ctx.lineWidth = this.lineWidth;
+    ctx.lineCap = this.lineCap;
+    ctx.strokeStyle = this.strokeStyle;
+
+    ctx.beginPath();
+    ctx.moveTo(this.points[0].x, this.points[0].y);
+    for (let i = 1; i < this.points.length; i++) {
+      ctx.lineTo(this.points[i].x, this.points[i].y);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+const strokes: MarkerLine[] = [];
+const redos: MarkerLine[] = [];
 
 canvas.addEventListener("mousedown", (event) => {
   cursor.active = true;
   cursor.x = event.offsetX;
   cursor.y = event.offsetY;
 
-  strokes.push([{ x: cursor.x, y: cursor.y }]);
+  strokes.push(new MarkerLine(cursor.x, cursor.y));
   redos.splice(0, redos.length);
   canvas.dispatchEvent(new Event("drawing-changed"));
 });
@@ -49,7 +90,7 @@ canvas.addEventListener("mousemove", (event) => {
 
   const current = strokes[strokes.length - 1];
   if (current) {
-    current.push({ x: event.offsetX, y: event.offsetY });
+    current.drag(event.offsetX, event.offsetY);
     cursor.x = event.offsetX;
     cursor.y = event.offsetY;
     canvas.dispatchEvent(new Event("drawing-changed"));
@@ -70,18 +111,8 @@ canvas.addEventListener("drawing-changed", () => {
   context.fillStyle = "white";
   context.fillRect(0, 0, canvas.width, canvas.height);
 
-  context.lineWidth = 2;
-  context.lineCap = "round";
-  context.strokeStyle = "black";
-
-  for (const stroke of strokes) {
-    if (stroke.length === 0) continue;
-    context.beginPath();
-    context.moveTo(stroke[0].x, stroke[0].y);
-    for (let i = 1; i < stroke.length; i++) {
-      context.lineTo(stroke[i].x, stroke[i].y);
-    }
-    context.stroke();
+  for (const s of strokes) {
+    s.display(context);
   }
 });
 
