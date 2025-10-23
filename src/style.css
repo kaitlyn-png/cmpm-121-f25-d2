@@ -71,3 +71,27 @@
 #thick-marker-button.active {
   background-color: #e68a00;
 }
+
+.sketchpad-container {
+  cursor: none;
+}
+
+canvas.active {
+  cursor: crosshair;
+}
+
+/* reference: https://stackoverflow.com/questions/76316492/custom-circle-cursor-with-hover-state-where-the-circle-is-filled-css-html-javasc */
+
+.thin-marker {
+  cursor:
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="%23000000" width="6px" height="6px" viewBox="0 0 10.04 10.04"><circle cx="5.02" cy="5.02" r="4.52"/></svg>')
+    10 10,
+    auto;
+}
+
+.thick-marker {
+  cursor:
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23000000" stroke="%23000000" width="12px" height="12px" viewBox="0 0 10.04 10.04"><circle cx="5.02" cy="5.02" r="4.52"/></svg>')
+    10 10,
+    auto;
+}
