@@ -90,6 +90,7 @@ canvas.addEventListener("mousedown", (event) => {
   strokes.push(new MarkerLine(cursor.x, cursor.y, currentLineWidth));
   redos.splice(0, redos.length);
   canvas.dispatchEvent(new Event("drawing-changed"));
+  canvas.dispatchEvent(new Event("tool-moved"));
 });
 
 canvas.addEventListener("mousemove", (event) => {
@@ -120,6 +121,23 @@ canvas.addEventListener("drawing-changed", () => {
 
   for (const s of strokes) {
     s.display(context);
+  }
+});
+
+const sketchpad = document.getElementById(
+  "sketchpad-container",
+) as HTMLDivElement;
+
+canvas.addEventListener("tool-moved", () => {
+  if (currentLineWidth === 2) {
+    sketchpad.classList.add("thin-marker");
+  } else {
+    sketchpad.classList.remove("thin-marker");
+  }
+  if (currentLineWidth === 8) {
+    sketchpad.classList.add("thick-marker");
+  } else {
+    sketchpad.classList.remove("thick-marker");
   }
 });
 
@@ -172,10 +190,12 @@ thinMarkerButton.addEventListener("click", () => {
   currentLineWidth = 2;
   thinMarkerButton.classList.add("active");
   thickMarkerButton.classList.remove("active");
+  canvas.dispatchEvent(new Event("tool-moved"));
 });
 
 thickMarkerButton.addEventListener("click", () => {
   currentLineWidth = 8;
   thickMarkerButton.classList.add("active");
   thinMarkerButton.classList.remove("active");
+  canvas.dispatchEvent(new Event("tool-moved"));
 });
