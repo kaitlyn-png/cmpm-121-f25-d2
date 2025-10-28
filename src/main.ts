@@ -217,7 +217,6 @@ canvas.addEventListener("click", (event) => {
   canvas.dispatchEvent(new Event("tool-moved"));
 });
 
-
 const sketchpad = document.getElementById(
   "sketchpad-container",
 ) as HTMLDivElement;
@@ -295,6 +294,8 @@ thinMarkerButton.addEventListener("click", () => {
   currentLineWidth = 2;
   thinMarkerButton.classList.add("active");
   thickMarkerButton.classList.remove("active");
+  const stickerCurrent = document.querySelectorAll(".sticker-button");
+  stickerCurrent.forEach((button) => button.classList.remove("active"));
   canvas.dispatchEvent(new Event("tool-moved"));
 });
 
@@ -303,6 +304,8 @@ thickMarkerButton.addEventListener("click", () => {
   currentLineWidth = 8;
   thickMarkerButton.classList.add("active");
   thinMarkerButton.classList.remove("active");
+  const stickerCurrent = document.querySelectorAll(".sticker-button");
+  stickerCurrent.forEach((button) => button.classList.remove("active"));
   canvas.dispatchEvent(new Event("tool-moved"));
 });
 
@@ -318,6 +321,9 @@ stickers.forEach((sticker) => {
   btn.addEventListener("click", () => {
     currentSticker = sticker;
     currentTool = "sticker";
+    const stickerCurrent = document.querySelectorAll(".sticker-button");
+    stickerCurrent.forEach((button) => button.classList.remove("active"));
+    btn.classList.add("active");
     thinMarkerButton.classList.remove("active");
     thickMarkerButton.classList.remove("active");
     canvas.dispatchEvent(new Event("tool-moved"));
