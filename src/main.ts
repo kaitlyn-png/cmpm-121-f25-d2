@@ -1,5 +1,7 @@
 import "./style.css";
 
+// HTML SETUP
+
 document.body.innerHTML = `
   <div id = "main">
     <div id = "sketchpad-container">
@@ -18,6 +20,9 @@ document.body.innerHTML = `
     <div id = "sticker-button-container">
       <button id="add-sticker-button">add sticker</button>
       <pre id="log"></pre>
+    </div>
+    <div id = "export-button-container">
+      <button id="export-button"> export </button>
     </div>
   </div>
 `;
@@ -342,6 +347,8 @@ addStickerButton.addEventListener("click", () => {
   }
 });
 
+// UPDATE STICKERS FUNCTION
+
 function updateStickers() {
   stickers.forEach(() => {
     const removeButton = document.querySelector(".sticker-button");
@@ -364,3 +371,31 @@ function updateStickers() {
     stickerContainer.appendChild(btn);
   });
 }
+
+// EXPORT
+
+const exportButton = document.getElementById(
+  "export-button",
+) as HTMLButtonElement;
+
+exportButton.addEventListener("click", () => {
+  const exportCanvas = document.createElement("canvas");
+  exportCanvas.width = 1024;
+  exportCanvas.height = 1024;
+  const exportContext = exportCanvas.getContext("2d");
+  if (!exportContext) {
+    return;
+  }
+  exportContext?.scale(4, 4);
+  exportContext.fillStyle = "white";
+  exportContext.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+  displayList.forEach((command) => {
+    command.display(exportContext);
+  });
+
+  const anchor = document.createElement("a");
+  anchor.href = exportCanvas.toDataURL("image/png");
+  anchor.download = "sketchpad.png";
+  anchor.click();
+});

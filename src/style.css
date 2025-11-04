@@ -125,3 +125,14 @@ canvas.active {
   cursor: pointer;
   margin: 5px;
 }
+
+#export-button {
+  font-size: 16px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #96d2ee;
+  color: white;
+  cursor: pointer;
+  margin: 5px;
+}
