@@ -15,7 +15,10 @@ document.body.innerHTML = `
       <button id="thin-marker-button" class="active">thin marker</button>
       <button id="thick-marker-button">thick marker</button>
     </div>
-    <div id = "sticker-button-container"></div>
+    <div id = "sticker-button-container">
+      <button id="add-sticker-button">add sticker</button>
+      <pre id="log"></pre>
+    </div>
   </div>
 `;
 
@@ -128,6 +131,7 @@ class StickerCommand implements DrawCommand {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(this.sticker, this.x, this.y);
+    ctx.fillStyle = "black";
   }
 }
 
@@ -313,20 +317,50 @@ thickMarkerButton.addEventListener("click", () => {
 
 const stickers = ["❤️", "🌸", "🐱"];
 const stickerContainer = document.getElementById("sticker-button-container")!;
+updateStickers();
 
-stickers.forEach((sticker) => {
-  const btn = document.createElement("button");
-  btn.innerText = sticker;
-  btn.classList.add("sticker-button");
-  btn.addEventListener("click", () => {
-    currentSticker = sticker;
-    currentTool = "sticker";
-    const stickerCurrent = document.querySelectorAll(".sticker-button");
-    stickerCurrent.forEach((button) => button.classList.remove("active"));
-    btn.classList.add("active");
-    thinMarkerButton.classList.remove("active");
-    thickMarkerButton.classList.remove("active");
-    canvas.dispatchEvent(new Event("tool-moved"));
-  });
-  stickerContainer.appendChild(btn);
+// ADDING STICKERS
+
+const addStickerButton = document.getElementById(
+  "add-sticker-button",
+) as HTMLButtonElement;
+
+const log = document.getElementById(
+  "log",
+) as HTMLButtonElement;
+
+addStickerButton.addEventListener("click", () => {
+  const addSticker = prompt("What Sticker Do You Want To Add?");
+
+  if (addSticker === null) {
+    log.innerText = "Try Again";
+  } else if (!addSticker && !(addSticker.trim() !== "")) {
+    log.innerText = "Try Again";
+  } else {
+    stickers.push(addSticker);
+    updateStickers();
+  }
 });
+
+function updateStickers() {
+  stickers.forEach(() => {
+    const removeButton = document.querySelector(".sticker-button");
+    removeButton?.remove();
+  });
+  stickers.forEach((sticker) => {
+    const btn = document.createElement("button");
+    btn.innerText = sticker;
+    btn.classList.add("sticker-button");
+    btn.addEventListener("click", () => {
+      currentSticker = sticker;
+      currentTool = "sticker";
+      const stickerCurrent = document.querySelectorAll(".sticker-button");
+      stickerCurrent.forEach((button) => button.classList.remove("active"));
+      btn.classList.add("active");
+      thinMarkerButton.classList.remove("active");
+      thickMarkerButton.classList.remove("active");
+      canvas.dispatchEvent(new Event("tool-moved"));
+    });
+    stickerContainer.appendChild(btn);
+  });
+}
