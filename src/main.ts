@@ -1,5 +1,14 @@
 import "./style.css";
 
+// IMAGE IMPORTS
+
+const trashImg = new URL("./trash.png", import.meta.url).href;
+const undoImg = new URL("./undo.png", import.meta.url).href;
+const redoImg = new URL("./redo.png", import.meta.url).href;
+const thinImg = new URL("./thin.png", import.meta.url).href;
+const thickImg = new URL("./thick.png", import.meta.url).href;
+const addImg = new URL("./add.png", import.meta.url).href;
+
 // HTML SETUP
 
 document.body.innerHTML = `
@@ -9,17 +18,14 @@ document.body.innerHTML = `
       <canvas id="cvs"></canvas>
     </div>
     <div id = "buttons-container">
-      <button id="clear-button">clear</button>
-      <button id="undo-button">undo</button>
-      <button id="redo-button">redo</button>
-    </div>
-    <div id = "marker-buttons-container">
-      <button id="thin-marker-button" class="active">thin marker</button>
-      <button id="thick-marker-button">thick marker</button>
+      <button id="clear-button"><img src="${trashImg}"></button>
+      <button id="undo-button"><img src="${undoImg}"></button>
+      <button id="redo-button"><img src="${redoImg}"></button>
+      <button id="thin-marker-button" class="active"><img src="${thinImg}"></button>
+      <button id="thick-marker-button"><img src="${thickImg}"></button>
+      <button id="add-sticker-button"><img src="${addImg}"></button>
     </div>
     <div id = "sticker-button-container">
-      <button id="add-sticker-button">add sticker</button>
-      <pre id="log"></pre>
     </div>
     <div id = "export-button-container">
       <button id="export-button"> export </button>
@@ -330,17 +336,11 @@ const addStickerButton = document.getElementById(
   "add-sticker-button",
 ) as HTMLButtonElement;
 
-const log = document.getElementById(
-  "log",
-) as HTMLButtonElement;
-
 addStickerButton.addEventListener("click", () => {
   const addSticker = prompt("What Sticker Do You Want To Add?");
 
-  if (addSticker === null) {
-    log.innerText = "Try Again";
-  } else if (!addSticker && !(addSticker.trim() !== "")) {
-    log.innerText = "Try Again";
+  if (addSticker === null || !addSticker && !(addSticker.trim() !== "")) {
+    return;
   } else {
     stickers.push(addSticker);
     updateStickers();
