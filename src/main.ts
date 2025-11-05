@@ -62,11 +62,13 @@ let currentLineWidth = 2;
 type Tool = "marker-thin" | "marker-thick" | "sticker";
 let currentTool: Tool = "marker-thin"; // default
 let currentSticker: string = "❤️";
+let currentColor: string = "black"; //default
 let isDrawing = false;
 
-const displayList: DrawCommand[] = []; // everything to be drawn
+const displayList: DrawCommand[] = [];
 const redoStack: DrawCommand[] = [];
 let toolPreview: DrawCommand | null = null;
+let previewRotation: number | null = null;
 
 // COMMANDS
 
@@ -74,7 +76,7 @@ class MarkerLine implements DrawCommand {
   points: Point[] = [];
   fillStyle = "black";
   lineCap: CanvasLineCap = "round";
-  strokeStyle = "black";
+  strokeStyle = currentColor;
   linewidth: number = 2; //default line width
 
   constructor(x: number, y: number, lineWidth: number) {
@@ -104,23 +106,30 @@ class MarkerLine implements DrawCommand {
 }
 
 class StickerPreview implements DrawCommand {
-  x: number;
-  y: number;
-  sticker: string;
+  readonly x: number;
+  readonly y: number;
+  readonly sticker: string;
+  readonly rotation: number;
 
-  constructor(x: number, y: number, sticker: string) {
+  constructor(x: number, y: number, sticker: string, rotation: number) {
     this.x = x;
     this.y = y;
     this.sticker = sticker;
+    this.rotation = rotation;
   }
 
   display(ctx: CanvasRenderingContext2D) {
     ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation);
+
     ctx.globalAlpha = 0.5;
+    ctx.fillStyle = "black";
     ctx.font = "24px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(this.sticker, this.x, this.y);
+    ctx.fillText(this.sticker, 0, 0);
+
     ctx.restore();
   }
 }
@@ -129,20 +138,28 @@ class StickerCommand implements DrawCommand {
   x: number;
   y: number;
   sticker: string;
+  rotation: number;
 
-  constructor(x: number, y: number, sticker: string) {
+  constructor(x: number, y: number, sticker: string, rotation: number) {
     this.x = x;
     this.y = y;
     this.sticker = sticker;
+    this.rotation = rotation;
   }
 
   display(ctx: CanvasRenderingContext2D) {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation);
+
     ctx.globalAlpha = 1;
+    ctx.fillStyle = "black";
     ctx.font = "24px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(this.sticker, this.x, this.y);
-    ctx.fillStyle = "black";
+    ctx.fillText(this.sticker, 0, 0);
+
+    ctx.restore();
   }
 }
 
@@ -202,7 +219,10 @@ canvas.addEventListener("mousemove", (event) => {
 
   if (!isDrawing) {
     if (currentTool === "sticker") {
-      toolPreview = new StickerPreview(x, y, currentSticker);
+      if (previewRotation === null) {
+        previewRotation = (Math.random() * 0.25 - 0.125) * Math.PI;
+      }
+      toolPreview = new StickerPreview(x, y, currentSticker, previewRotation);
     }
     canvas.dispatchEvent(new Event("tool-moved"));
     return;
@@ -223,9 +243,15 @@ canvas.addEventListener("click", (event) => {
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
 
-  const stickerCmd = new StickerCommand(x, y, currentSticker);
+  const stickerCmd = new StickerCommand(
+    x,
+    y,
+    currentSticker,
+    previewRotation ?? 0,
+  );
   displayList.push(stickerCmd);
 
+  previewRotation = null;
   toolPreview = null;
 
   canvas.dispatchEvent(new Event("drawing-changed"));
@@ -304,23 +330,46 @@ redoButton.addEventListener("click", () => {
   }
 });
 
+const colorList = [
+  "red",
+  "orange",
+  "yellow",
+  "green",
+  "blue",
+  "purple",
+  "pink",
+  "black",
+];
+
 thinMarkerButton.addEventListener("click", () => {
   currentTool = "marker-thin";
   currentLineWidth = 2;
-  thinMarkerButton.classList.add("active");
-  thickMarkerButton.classList.remove("active");
+
   const stickerCurrent = document.querySelectorAll(".sticker-button");
   stickerCurrent.forEach((button) => button.classList.remove("active"));
+
+  thinMarkerButton.removeAttribute("class");
+  thickMarkerButton.removeAttribute("class");
+
+  currentColor = colorList[Math.floor(Math.random() * 7) + 1];
+  thinMarkerButton.classList.add(currentColor);
+
   canvas.dispatchEvent(new Event("tool-moved"));
 });
 
 thickMarkerButton.addEventListener("click", () => {
   currentTool = "marker-thick";
   currentLineWidth = 8;
-  thickMarkerButton.classList.add("active");
-  thinMarkerButton.classList.remove("active");
+
   const stickerCurrent = document.querySelectorAll(".sticker-button");
   stickerCurrent.forEach((button) => button.classList.remove("active"));
+
+  thinMarkerButton.removeAttribute("class");
+  thickMarkerButton.removeAttribute("class");
+
+  currentColor = colorList[Math.floor(Math.random() * 7) + 1];
+  thickMarkerButton.classList.add(currentColor);
+
   canvas.dispatchEvent(new Event("tool-moved"));
 });
 
@@ -361,11 +410,12 @@ function updateStickers() {
     btn.addEventListener("click", () => {
       currentSticker = sticker;
       currentTool = "sticker";
+      previewRotation = null;
       const stickerCurrent = document.querySelectorAll(".sticker-button");
       stickerCurrent.forEach((button) => button.classList.remove("active"));
       btn.classList.add("active");
-      thinMarkerButton.classList.remove("active");
-      thickMarkerButton.classList.remove("active");
+      thinMarkerButton.removeAttribute("class");
+      thickMarkerButton.removeAttribute("class");
       canvas.dispatchEvent(new Event("tool-moved"));
     });
     stickerContainer.appendChild(btn);

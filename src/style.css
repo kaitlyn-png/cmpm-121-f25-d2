@@ -40,6 +40,17 @@ img {
   cursor: pointer;
 }
 
+#clear-button:hover,
+#undo-button:hover,
+#redo-button:hover,
+#thin-marker-button:hover,
+#thick-marker-button:hover,
+.sticker-button:hover,
+#add-sticker-button:hover,
+#export-button:hover {
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+
 #thin-marker-button.active,
 #thick-marker-button.active {
   background-color: #e9e9e9;
@@ -69,6 +80,32 @@ canvas.active {
     auto;
 }
 
+#thin-marker-button.red, #thick-marker-button.red {
+  background-color: red;
+}
+
+#thin-marker-button.orange, #thick-marker-button.orange {
+  background-color: orange;
+}
+#thin-marker-button.yellow, #thick-marker-button.yellow {
+  background-color: yellow;
+}
+#thin-marker-button.green, #thick-marker-button.green {
+  background-color: green;
+}
+#thin-marker-button.blue, #thick-marker-button.blue {
+  background-color: blue;
+}
+#thin-marker-button.purple, #thick-marker-button.purple {
+  background-color: purple;
+}
+#thin-marker-button.pink, #thick-marker-button.pink {
+  background-color: pink;
+}
+#thin-marker-button.black, #thick-marker-button.black {
+  background-color: #e9e9e9;
+}
+
 .sticker-marker {
   cursor: crosshair;
 }
@@ -95,17 +132,6 @@ canvas.active {
   border-radius: 5px;
   background-color: white;
   color: black;
-  cursor: pointer;
-  margin: 5px;
-}
-
-#export-button {
-  font-size: 16px;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 5px;
-  background-color: #96d2ee;
-  color: white;
   cursor: pointer;
   margin: 5px;
 }
